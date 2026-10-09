@@ -22,11 +22,11 @@ from campus_assistant.agents.followup_agent import build_followup_agent, governe
 from campus_assistant.report import build_report, save_report
 
 DESK_META = {
-    "academic":  {"label": "Academic",  "icon": ":material/menu_book:"},
-    "hostel":    {"label": "Hostel",    "icon": ":material/home:"},
-    "examcell":  {"label": "Exam Cell", "icon": ":material/edit_note:"},
-    "placement": {"label": "Placement", "icon": ":material/work:"},
-    "fee":       {"label": "Fee",       "icon": ":material/payments:"},
+    "academic":  {"label": "Academic"},
+    "hostel":    {"label": "Hostel"},
+    "examcell":  {"label": "Exam Cell"},
+    "placement": {"label": "Placement"},
+    "fee":       {"label": "Fee"},
 }
 
 SUGGESTED_QUESTIONS = [
@@ -36,59 +36,43 @@ SUGGESTED_QUESTIONS = [
     "What is the minimum attendance required for exams?",
 ]
 
-USER_AVATAR = ":material/person:"
-ASSISTANT_AVATAR = ":material/account_balance:"
-
 CUSTOM_CSS = """
 <style>
 /*
-  Design tokens. Native Streamlit chrome (buttons, chat input, Deploy menu,
-  sidebar toggle, container borders) is themed separately via
-  .streamlit/config.toml using the SAME color values, so both systems move
-  together instead of fighting each other. Light values below are the
-  defaults; the prefers-color-scheme block overrides them for dark, mirroring
-  config.toml's [theme.dark] (which Streamlit's own "Use system setting"
-  theme option already keys off of).
+  Design tokens, dark theme only. Native Streamlit chrome (buttons, chat
+  input, Deploy menu, sidebar toggle, container borders) is themed
+  separately via .streamlit/config.toml using the SAME color values, so
+  both systems match instead of fighting each other.
 
   Contrast ratios (WCAG 2.2), computed against the exact paired background:
-    LIGHT  text on bg            #1B2430 / #F7F8FA   14.73:1  (AA body 4.5 req)
-    LIGHT  text on surface       #1B2430 / #FFFFFF   15.65:1
-    LIGHT  text-muted on bg      #5B6472 / #F7F8FA    5.63:1
-    LIGHT  text-muted on surface #5B6472 / #FFFFFF    5.98:1
-    LIGHT  accent-text on accent #FFFFFF / #2F5D8A     6.88:1
-    LIGHT  accent on surface     #2F5D8A / #FFFFFF     6.88:1
-    LIGHT  accent on accent-soft #2F5D8A / #E7EEF5     5.88:1
-    LIGHT  text on accent-soft   #1B2430 / #E7EEF5    13.38:1
-    LIGHT  danger on surface     #B42318 / #FFFFFF     6.57:1
-    LIGHT  border on surface     #7E8A99 / #FFFFFF     3.51:1  (AA UI 3:1 req)
-    LIGHT  focus on bg           #2F5D8A / #F7F8FA     6.47:1
-    DARK   text on bg            #E7EBF0 / #11161D    15.17:1
-    DARK   text on surface       #E7EBF0 / #1A212B    13.53:1
-    DARK   text-muted on bg      #9AA5B1 / #11161D     7.26:1
-    DARK   text-muted on surface #9AA5B1 / #1A212B     6.47:1
-    DARK   accent-text on accent #0B1620 / #7FB2E0     8.13:1
-    DARK   accent on surface     #7FB2E0 / #1A212B     7.21:1
-    DARK   accent on accent-soft #7FB2E0 / #1E3A52     5.24:1
-    DARK   text on accent-soft   #E7EBF0 / #1E3A52     9.84:1
-    DARK   danger on bg          #FF6B6B / #11161D     6.54:1
-    DARK   border on surface     #687489 / #1A212B     3.43:1
-    DARK   focus on bg           #7FB2E0 / #11161D     8.08:1
+    text on bg            #E7EBF0 / #11161D    15.17:1  (AA body 4.5 req)
+    text on surface       #E7EBF0 / #1A212B    13.53:1
+    text-muted on bg      #9AA5B1 / #11161D     7.26:1
+    text-muted on surface #9AA5B1 / #1A212B     6.47:1
+    accent-text on accent #0B1620 / #7FB2E0     8.13:1
+    accent on surface     #7FB2E0 / #1A212B     7.21:1
+    accent on accent-soft #7FB2E0 / #1E3A52     5.24:1
+    text on accent-soft   #E7EBF0 / #1E3A52     9.84:1
+    danger on bg          #FF6B6B / #11161D     6.54:1
+    border on surface     #687489 / #1A212B     3.43:1  (AA UI 3:1 req)
+    focus on bg           #7FB2E0 / #11161D     8.08:1
+    success-text on success-soft #4ADE80 / #14532D  5.23:1
 */
 :root {
     /* semantic colors */
-    --bg: #F7F8FA;
-    --surface: #FFFFFF;
-    --surface-raised: #FFFFFF;
-    --text: #1B2430;
-    --text-muted: #5B6472;
-    --border: #7E8A99;
-    --accent: #2F5D8A;
-    --accent-text: #FFFFFF;
-    --accent-soft: #E7EEF5;
-    --focus: #2F5D8A;
-    --danger: #B42318;
-    --success-text: #12753A;
-    --success-soft: #DCFCE7;
+    --bg: #11161D;
+    --surface: #1A212B;
+    --surface-raised: #212A36;
+    --text: #E7EBF0;
+    --text-muted: #9AA5B1;
+    --border: #687489;
+    --accent: #7FB2E0;
+    --accent-text: #0B1620;
+    --accent-soft: #1E3A52;
+    --focus: #7FB2E0;
+    --danger: #FF6B6B;
+    --success-text: #4ADE80;
+    --success-soft: #14532D;
 
     /* type scale */
     --fs-xs: 0.75rem;
@@ -110,25 +94,7 @@ CUSTOM_CSS = """
     --radius-md: 10px;
     --radius-lg: 16px;
     --radius-full: 999px;
-    --shadow: 0 1px 2px rgba(15,23,42,0.06), 0 2px 8px rgba(15,23,42,0.08);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #11161D;
-        --surface: #1A212B;
-        --surface-raised: #212A36;
-        --text: #E7EBF0;
-        --text-muted: #9AA5B1;
-        --border: #687489;
-        --accent: #7FB2E0;
-        --accent-text: #0B1620;
-        --accent-soft: #1E3A52;
-        --focus: #7FB2E0;
-        --danger: #FF6B6B;
-        --success-text: #4ADE80;
-        --success-soft: #14532D;
-    }
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.25);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -158,9 +124,8 @@ body, [data-testid="stAppViewContainer"] { font-family: var(--font-body); }
 }
 .ca-hero-title {
     font-family: var(--font-display); font-size: var(--fs-display); font-weight: 600;
-    color: var(--text); margin: 0 0 var(--space-2) 0; display: flex; align-items: center; gap: var(--space-3);
+    color: var(--text); margin: 0 0 var(--space-2) 0;
 }
-.ca-hero-title [data-testid="stIconMaterial"] { color: var(--accent); font-size: 1.6rem; }
 .ca-hero-sub { font-size: var(--fs-base); color: var(--text-muted); max-width: 640px; line-height: 1.55; margin: 0; }
 
 /* ---- "Try one of these" section heading ---- */
@@ -247,14 +212,14 @@ def reset_session():
 
 
 def desk_pill(desk_key: str) -> str:
-    meta = DESK_META.get(desk_key, {"label": desk_key.title(), "icon": ":material/apartment:"})
-    return f'<span class="ca-pill ca-pill-desk">{meta["icon"]} {meta["label"]}</span>'
+    meta = DESK_META.get(desk_key, {"label": desk_key.title()})
+    return f'<span class="ca-pill ca-pill-desk">{meta["label"]}</span>'
 
 
 def status_pill(escalated: bool, contact: str | None, confidence: str) -> str:
     if escalated:
-        return f'<span class="ca-pill ca-pill-warn">:material/error: Escalated → {contact or "relevant department"}</span>'
-    return f'<span class="ca-pill ca-pill-ok">:material/check_circle: Grounded · {confidence} confidence</span>'
+        return f'<span class="ca-pill ca-pill-warn">Escalated → {contact or "relevant department"}</span>'
+    return f'<span class="ca-pill ca-pill-ok">Grounded · {confidence} confidence</span>'
 
 
 def status_row_html(desk_key: str | None, escalated: bool, contact: str | None, confidence: str) -> str:
@@ -270,7 +235,7 @@ if "pending_query" not in st.session_state:
 
 # ---------------- Sidebar ----------------
 with st.sidebar:
-    st.markdown('<h2 class="ca-sidebar-brand">:material/school: CampusAssist</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="ca-sidebar-brand">CampusAssist</h2>', unsafe_allow_html=True)
     st.markdown('<p class="ca-sidebar-tagline">Your AI-powered college helpdesk</p>', unsafe_allow_html=True)
 
     st.markdown("**Settings**")
@@ -289,7 +254,7 @@ with st.sidebar:
         f'<div class="ca-session-card">Session<br><code>{st.session_state.session_id}</code></div>',
         unsafe_allow_html=True,
     )
-    if st.button("Start new session", icon=":material/refresh:", use_container_width=True):
+    if st.button("Start new session", use_container_width=True):
         reset_session()
         st.rerun()
 
@@ -297,7 +262,6 @@ with st.sidebar:
         report = build_report(st.session_state.primary_result, st.session_state.qna)
         st.download_button(
             "Download session report",
-            icon=":material/download:",
             data=json.dumps(report, indent=2, ensure_ascii=False),
             file_name=f"session_report_{st.session_state.session_id}.json",
             mime="application/json",
@@ -313,7 +277,7 @@ with st.sidebar:
 st.markdown(
     """
     <div class="ca-hero">
-      <h1 class="ca-hero-title">:material/school: CampusAssist</h1>
+      <h1 class="ca-hero-title">CampusAssist</h1>
       <p class="ca-hero-sub">
         Ask about academics, hostel, exams, placements, or fees. Answers are grounded
         in official circulars — and escalated to the right office whenever we're not confident.
@@ -335,17 +299,16 @@ with chat_card:
                 st.rerun()
 
     for msg in st.session_state.messages:
-        avatar = USER_AVATAR if msg["role"] == "user" else ASSISTANT_AVATAR
-        with st.chat_message(msg["role"], avatar=avatar):
+        with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
             if msg.get("status_html"):
                 st.markdown(msg["status_html"], unsafe_allow_html=True)
             if msg.get("sources"):
-                with st.expander("Sources used", icon=":material/link:"):
+                with st.expander("Sources used"):
                     for src in msg["sources"]:
                         st.markdown(f"- **{src['source']}** (score: {src['score']:.2f})")
             if msg.get("draft_answer"):
-                with st.expander("Show the system's draft answer (unverified)", icon=":material/visibility:"):
+                with st.expander("Show the system's draft answer (unverified)"):
                     st.markdown(msg["draft_answer"])
 
     query = st.chat_input("Ask your question...")
@@ -355,10 +318,10 @@ with chat_card:
 
     if query:
         st.session_state.messages.append({"role": "user", "content": query})
-        with st.chat_message("user", avatar=USER_AVATAR):
+        with st.chat_message("user"):
             st.markdown(query)
 
-        with st.chat_message("assistant", avatar=ASSISTANT_AVATAR):
+        with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 if st.session_state.primary_result is None:
                     # First message in the session -> full pipeline: route, retrieve, reflect, govern
@@ -376,11 +339,11 @@ with chat_card:
                     st.markdown(answer)
                     st.markdown(status_html, unsafe_allow_html=True)
                     if sources:
-                        with st.expander("Sources used", icon=":material/link:"):
+                        with st.expander("Sources used"):
                             for src in sources:
                                 st.markdown(f"- **{src['source']}** (score: {src['score']:.2f})")
                     if draft_answer:
-                        with st.expander("Show the system's draft answer (unverified)", icon=":material/visibility:"):
+                        with st.expander("Show the system's draft answer (unverified)"):
                             st.markdown(draft_answer)
 
                     st.session_state.messages.append({
@@ -400,7 +363,7 @@ with chat_card:
                     st.markdown(answer)
                     st.markdown(status_html, unsafe_allow_html=True)
                     if draft_answer and draft_answer != answer:
-                        with st.expander("Show the system's draft answer (unverified)", icon=":material/visibility:"):
+                        with st.expander("Show the system's draft answer (unverified)"):
                             st.markdown(draft_answer)
 
                     st.session_state.qna.append({"question": query, "answer": answer})
