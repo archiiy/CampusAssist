@@ -1,13 +1,13 @@
 """
-Mock chat model for offline testing (CAMPUS_ASSISTANT_MOCK=1).
+Mock chat model for offline testing (mock=True / CAMPUS_ASSISTANT_MOCK=1).
 
-Handles four prompt "modes" by sniffing marker phrases the real prompts
-in this project always include:
-  - classification  -> returns a desk label
-  - RAG answer draft -> synthesizes a short answer from provided context
-  - reflection check -> decides grounded/ungrounded + confidence
-  - follow-up chat   -> ReAct-style tool calling, same pattern as the
-                        trip concierge's mock
+Handles four prompt "modes" by sniffing marker phrases shared with the
+real prompts in campus_assistant.prompts (so editing a real prompt and
+breaking mock detection can't happen silently — see prompts.py):
+  - classification   -> returns a desk label
+  - RAG answer draft  -> synthesizes a short answer from provided context
+  - reflection check  -> decides grounded/ungrounded + confidence
+  - follow-up chat    -> ReAct-style tool calling
 
 This is intentionally simple pattern-matching, not real understanding —
 use the real qwen2.5:3b model to actually judge quality.
@@ -16,6 +16,8 @@ use the real qwen2.5:3b model to actually judge quality.
 import re
 from langchain_core.runnables import Runnable
 from langchain_core.messages import AIMessage, ToolMessage, HumanMessage
+
+from campus_assistant.prompts import ROUTER_MARKER, ANSWER_MARKER, REFLECTION_MARKER
 
 DESK_KEYWORDS = {
     "hostel": ["hostel", "room", "mess", "warden", "roommate"],
@@ -41,13 +43,13 @@ class MockChatModel(Runnable):
         text = prompt.to_string() if hasattr(prompt, "to_string") else str(prompt)
         low = text.lower()
 
-        if "classify the student" in low:
+        if ROUTER_MARKER in low:
             return self._classify(low)
 
-        if "based on the following context" in low:
+        if ANSWER_MARKER in low:
             return self._draft_answer(text)
 
-        if "fully supported by the context" in low:
+        if REFLECTION_MARKER in low:
             return self._reflect(text)
 
         return AIMessage("I'm not sure — this is the mock model, swap in a real one.")

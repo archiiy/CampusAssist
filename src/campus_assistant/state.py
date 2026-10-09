@@ -1,12 +1,12 @@
 """
 Phase 1 — Shared state schema.
 
-Same philosophy as your trip concierge: one TypedDict threaded through
-every node (router, desk agents, reflection, governance, follow-up,
-report) instead of each stage inventing its own shape.
+One TypedDict threaded through every node (router, desk agents,
+reflection, governance, report) instead of each stage inventing its
+own shape.
 """
 
-from typing import TypedDict, List, Dict, Any, Optional
+from typing import TypedDict, List, Dict, Any
 
 
 class CampusAssistState(TypedDict, total=False):
@@ -14,6 +14,7 @@ class CampusAssistState(TypedDict, total=False):
     raw_query: str                # the student's free-text question
     desk: str                     # "academic" | "hostel" | "examcell" | "placement" | "fee"
     session_id: str               # fixed thread id for the checkpointer
+    router_fallback: bool         # True if the router's classification was invalid and defaulted to "academic"
 
     # --- RAG retrieval + draft answer ---
     retrieved_chunks: List[Dict[str, Any]]   # [{"text": ..., "source": ..., "score": ...}, ...]
@@ -28,9 +29,3 @@ class CampusAssistState(TypedDict, total=False):
     escalated: bool
     final_answer: str             # what actually gets shown to the student
     escalation_contact: str       # which office/desk to contact if escalated
-
-    # --- Follow-up conversation ---
-    conversation: List[Dict[str, str]]
-
-    # --- Report ---
-    report: Dict[str, Any]

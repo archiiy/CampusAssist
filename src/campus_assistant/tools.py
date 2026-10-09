@@ -4,15 +4,13 @@ Custom @tool functions for the follow-up agent.
 
 import re
 from datetime import datetime
+
 from langchain_core.tools import tool
 
-from retriever import retrieve
+from campus_assistant.config import settings
+from campus_assistant.rag.retriever import retrieve
 
 DESKS = ["academic", "hostel", "examcell", "placement", "fee"]
-
-# Fixed "today" for deadline calculations in this demo. In a real
-# deployment this would just be datetime.now().
-TODAY = datetime(2026, 9, 19)
 
 MONTH_MAP = {m.lower(): i for i, m in enumerate(
     ["January", "February", "March", "April", "May", "June", "July",
@@ -32,7 +30,8 @@ def date_calculator(query: str) -> str:
     if not month:
         return f"Unrecognized month: {month_name}"
     target = datetime(int(year), month, int(day))
-    delta = (target - TODAY).days
+    today = datetime.combine(settings.today, datetime.min.time())
+    delta = (target - today).days
     if delta > 0:
         return f"{delta} day(s) remaining until {target.strftime('%d %B %Y')}."
     elif delta == 0:

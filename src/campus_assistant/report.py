@@ -1,13 +1,15 @@
 """
-Phase 8 — Session Report.
+Session Report.
 
-Same pattern as the trip concierge: collect the full interaction into
-one structured object and write it to JSON.
+Collects the full interaction into one structured object and writes it
+to JSON.
 """
 
 import json
-import os
 from datetime import datetime, timezone
+from pathlib import Path
+
+from campus_assistant.config import settings
 
 
 def build_report(state: dict, followup_qna: list) -> dict:
@@ -17,6 +19,7 @@ def build_report(state: dict, followup_qna: list) -> dict:
         "query": {
             "raw_query": state.get("raw_query"),
             "routed_desk": state.get("desk"),
+            "router_fallback": state.get("router_fallback", False),
         },
         "retrieval": {
             "chunks_used": [
@@ -38,9 +41,10 @@ def build_report(state: dict, followup_qna: list) -> dict:
     }
 
 
-def save_report(report: dict, out_dir: str = "reports") -> str:
-    os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, f"session_report_{report['session_id']}.json")
+def save_report(report: dict, out_dir=None) -> str:
+    out_dir = settings.reports_dir if out_dir is None else Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"session_report_{report['session_id']}.json"
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
-    return path
+    return str(path)

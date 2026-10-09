@@ -3,14 +3,14 @@ Retrieval helper — given a desk name and a query, returns the top-k
 most relevant chunks from that desk's FAISS index (built by ingest.py).
 """
 
-import os
 import pickle
-import numpy as np
+
 import faiss
+import numpy as np
 
-from llm import get_embeddings
+from campus_assistant.config import settings
+from campus_assistant.llm.factory import get_embeddings
 
-INDEX_DIR = "vector_store"
 _cache = {}   # desk -> (faiss_index, chunks) — loaded once per process
 
 
@@ -18,14 +18,14 @@ def _load_desk_index(desk: str):
     if desk in _cache:
         return _cache[desk]
 
-    index_path = os.path.join(INDEX_DIR, f"{desk}.index")
-    meta_path = os.path.join(INDEX_DIR, f"{desk}.meta.pkl")
-    if not (os.path.exists(index_path) and os.path.exists(meta_path)):
+    index_path = settings.vector_store_dir / f"{desk}.index"
+    meta_path = settings.vector_store_dir / f"{desk}.meta.pkl"
+    if not (index_path.exists() and meta_path.exists()):
         raise FileNotFoundError(
-            f"No vector store found for desk '{desk}'. Run `python ingest.py` first."
+            f"No vector store found for desk '{desk}'. Run `python scripts/ingest.py` first."
         )
 
-    index = faiss.read_index(index_path)
+    index = faiss.read_index(str(index_path))
     with open(meta_path, "rb") as f:
         chunks = pickle.load(f)
 

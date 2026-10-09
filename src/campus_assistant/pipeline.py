@@ -1,5 +1,5 @@
 """
-Phase 6 — Pipeline Graph.
+Pipeline Graph.
 
 Combines the Router, Desk (RAG), Reflection, and Governance agents into
 one compiled LangGraph: query -> route -> retrieve+draft -> reflect ->
@@ -7,20 +7,20 @@ govern -> final answer.
 """
 
 from langgraph.graph import StateGraph, END
-from state import CampusAssistState
 
-from router_agent import router_agent, route_from_router
-from desk_agent import desk_agent
-from reflection_agent import reflection_agent
-from governance_agent import governance_agent
+from campus_assistant.state import CampusAssistState
+from campus_assistant.agents.router_agent import router_agent, route_from_router
+from campus_assistant.agents.desk_agent import desk_agent
+from campus_assistant.agents.reflection_agent import reflection_agent
+from campus_assistant.agents.governance_agent import governance_agent
 
 
-def build_pipeline_graph():
+def build_pipeline_graph(mock: bool | None = None):
     graph = StateGraph(CampusAssistState)
 
-    graph.add_node("router", router_agent)
-    graph.add_node("desk", desk_agent)
-    graph.add_node("reflection", reflection_agent)
+    graph.add_node("router", lambda state: router_agent(state, mock=mock))
+    graph.add_node("desk", lambda state: desk_agent(state, mock=mock))
+    graph.add_node("reflection", lambda state: reflection_agent(state, mock=mock))
     graph.add_node("governance", governance_agent)
 
     graph.set_entry_point("router")
