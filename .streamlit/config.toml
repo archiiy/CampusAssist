@@ -1,0 +1,30 @@
+# CampusAssist theme — single source of truth for Streamlit's native widget
+# colors (buttons, chat input, Deploy menu, sidebar toggle, container borders).
+# [theme.dark] extends [theme] and is used automatically when the viewer picks
+# "Use system setting" (or "Dark") from Streamlit's own theme menu, so native
+# chrome stays in sync with the custom CSS tokens defined in app.py, which use
+# the same color values and switch on the matching `prefers-color-scheme` media
+# query. See app.py's CUSTOM_CSS block for contrast-ratio measurements.
+
+[theme]
+base = "light"
+primaryColor = "#2F5D8A"
+backgroundColor = "#F7F8FA"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1B2430"
+borderColor = "#7E8A99"
+linkColor = "#2F5D8A"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+headingFont = "Lora:https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&display=swap"
+baseRadius = "0.625rem"
+buttonRadius = "0.625rem"
+showWidgetBorder = true
+showSidebarBorder = true
+
+[theme.dark]
+primaryColor = "#7FB2E0"
+backgroundColor = "#11161D"
+secondaryBackgroundColor = "#1A212B"
+textColor = "#E7EBF0"
+borderColor = "#687489"
+linkColor = "#7FB2E0"
